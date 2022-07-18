@@ -1,28 +1,28 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+import org.springframework.lang.NonNull;
 
 
 @Entity
-@Table(name = "T_Users")
+@Table(name = "T_Users", uniqueConstraints = {@UniqueConstraint(columnNames = {"emp_id"})})
 public class Users {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	long emp_id;
+	@NonNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "employee.emp_id")
+	private Employee employee;
 	String username;
 	String password;
 	
-	public long getEmp_id() {
-		return emp_id;
-	}
-	public void setEmp_id(long emp_id) {
-		this.emp_id = emp_id;
-	}
 	public String getUsername() {
 		return username;
 	}
@@ -35,7 +35,6 @@ public class Users {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
 	
 	
 }

@@ -66,6 +66,19 @@ public class UserService {
 		{
 			throw new ItemNotFoundException("Item not found");
 		}
+	}
+
+	public String loginAuthentication(long id, String uname, String pwd) {
+
+		Optional<Users> userEntity= userRepo.findById(id);
+		Users user = userEntity.get();
+		
+		if(id == user.getEmp_id() && uname == user.getUsername() && pwd == user.getPassword()) {
+			return "Authentication Successful";
+		}
+		else {
+			return "Authentication Unsuccessful";
+		}
 	}	
 	
 	

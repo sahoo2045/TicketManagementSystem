@@ -8,9 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/*
+ * @author - Ashutosh Sahoo
+ */
 
-/* @author - Ashutosh Sahoo
-*/
 @Entity
 @Table(name = "T_Ticket")
 public class Ticket {

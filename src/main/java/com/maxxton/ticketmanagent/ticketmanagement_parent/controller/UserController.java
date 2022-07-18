@@ -63,5 +63,12 @@ public class UserController {
 
 	}
 	
+	@RequestMapping(value = "/user/login/{id}/{uname}/{pwd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> loginAuthentication(@PathVariable long id, @PathVariable String uname, @PathVariable String pwd) {
+		String response = userService.loginAuthentication(id, uname, pwd);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+	
 
 }

@@ -1,22 +1,36 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+import org.springframework.lang.NonNull;
 
 @Entity
-@Table(name = "T_Employee")
+@Table(name = "T_Employee", uniqueConstraints = { @UniqueConstraint(columnNames = { "emp_id" }) })
 public class Employee {
 
 	@Id
+	@NonNull
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	long emp_id;
 	String emp_name;
 	String emp_designation;
 	String emp_type;
+
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, orphanRemoval = false)
+	private List<Users> listUsers = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, orphanRemoval = false)
+	private List<Ticket> listTickets = new ArrayList<>();
 
 	public long getEmp_id() {
 		return emp_id;
