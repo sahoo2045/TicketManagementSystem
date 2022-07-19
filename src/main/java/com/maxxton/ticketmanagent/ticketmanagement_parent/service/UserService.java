@@ -18,7 +18,6 @@ public class UserService {
 	UserRepo userRepo;
 
 	public Users createUsers(Users user) {
-
 		Users response = userRepo.save(user);
 		return response;
 	}
@@ -28,7 +27,7 @@ public class UserService {
 		List<Users> userList = new ArrayList<>();
 		for (Users us : response) {
 			Users u = new Users();
-			u.setEmp_id(us.getEmp_id());
+			u.setId(us.getId());
 			u.setUsername(us.getUsername());
 			u.setPassword(u.getPassword());
 			userList.add(u);
@@ -36,9 +35,14 @@ public class UserService {
 		return userList;
 	}
 
-	public Users deletUserById(Users user) {
-		userRepo.delete(user);
-		return null;
+	public Long deletUserById(long id) {
+		try{
+			userRepo.deleteById(id);
+			return id;
+		}
+		catch(Exception ex){
+			throw new ItemNotFoundException("Data Unavailable", ex);
+		}
 	}
 
 	public Users findUserById(long id) {
@@ -73,12 +77,37 @@ public class UserService {
 		Optional<Users> userEntity= userRepo.findById(id);
 		Users user = userEntity.get();
 		
-		if(id == user.getEmp_id() && uname == user.getUsername() && pwd == user.getPassword()) {
+		if(id == user.getId() && uname == user.getUsername() && pwd == user.getPassword()) {
 			return "Authentication Successful";
 		}
 		else {
 			return "Authentication Unsuccessful";
 		}
+	}
+
+	public Users updatePassword(String oldPassword, long employee_id, String newPassword) {
+		
+		Users userEntity = userRepo.findByEmployeeId(employee_id);
+		if(userEntity.getPassword().equals(oldPassword)) {
+			userEntity.setPassword(newPassword);
+			Users response = userRepo.save(userEntity);
+			return response;
+		}
+		else {
+			throw new ItemNotFoundException("Password Doesnt match");
+		}
+		
+
+		
+	}
+
+	public Users forgotPassword(long employee_id, String newPassword) {
+		
+		Users userEntity = userRepo.findByEmployeeId(employee_id);
+		userEntity.setPassword(newPassword);
+		Users response = userRepo.save(userEntity);
+		return response;
+		
 	}	
 	
 	

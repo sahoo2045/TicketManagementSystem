@@ -1,5 +1,6 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions;
 
+@SuppressWarnings("serial")
 public class ItemNotFoundException extends RuntimeException{
 
     public ItemNotFoundException(String message) {

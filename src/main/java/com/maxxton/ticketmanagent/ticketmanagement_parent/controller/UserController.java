@@ -26,49 +26,64 @@ public class UserController {
 		Users response = userService.createUsers(user);
 		return new ResponseEntity<Users>(response, HttpStatus.CREATED);
 	}
-
-	@RequestMapping(value = "/user/findAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Users>> findAllUsers() {
-
-		List<Users> response = userService.findAllUsers();
-		return new ResponseEntity<List<Users>>(response, HttpStatus.OK);
-
-	}
-
-	@RequestMapping(value = "/user/delete", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Users> deletUserById(@RequestBody Users user) {
-		Users response = userService.deletUserById(user);
-		return new ResponseEntity<Users>(response, HttpStatus.ACCEPTED);
+	
+	@RequestMapping(value = "/user/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Users> updateUser(@RequestBody Users user, @PathVariable long id) {
+		Users response = userService.updateUserById(user, id);
+		return new ResponseEntity<Users>(response, HttpStatus.OK);
 
 	}
 	
+	@RequestMapping(value = "/user/updatePassword/{employee_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Users> updatePassword( String oldPassword, @PathVariable long employee_id, String newPassword) {
+		Users response = userService.updatePassword(oldPassword, employee_id, newPassword);
+		return new ResponseEntity<Users>(response, HttpStatus.OK);
+
+	}
+	
+	@RequestMapping(value = "/user/forgotPassword/{employee_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Users> forgotPassword(@PathVariable long employee_id, String newPassword) {
+		Users response = userService.forgotPassword(employee_id, newPassword);
+		return new ResponseEntity<Users>(response, HttpStatus.OK);
+
+	}
+
+	
+	
+	@RequestMapping(value = "/user/findAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Users>> findAllUsers() {
+		List<Users> response = userService.findAllUsers();
+		return new ResponseEntity<List<Users>>(response, HttpStatus.OK);
+	}
+
+
 	@RequestMapping(value = "/user/findById/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Users> findUserById(@PathVariable long id) {
 		Users response = userService.findUserById(id);
 		return new ResponseEntity<Users>(response, HttpStatus.OK);
 
 	}
-	
+
 	@RequestMapping(value = "/user/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteAllUser() {
 		userService.deleteAllUser();
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.ACCEPTED);
 
 	}
-	
-	@RequestMapping(value = "/user/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Users> updateEmployeeById(@RequestBody Users user, @PathVariable long id) {
-		Users response = userService.updateUserById(user , id);
-		return new ResponseEntity<Users>(response, HttpStatus.OK);
-
+	@RequestMapping(value = "/user/delete/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Long> deletUserById(@PathVariable long id) {
+		Long response = userService.deletUserById(id);
+		return new ResponseEntity<Long>(response, HttpStatus.ACCEPTED);
 	}
-	
+
 	@RequestMapping(value = "/user/login/{id}/{uname}/{pwd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> loginAuthentication(@PathVariable long id, @PathVariable String uname, @PathVariable String pwd) {
+	public ResponseEntity<String> loginAuthentication(@PathVariable long id, @PathVariable String uname,
+			@PathVariable String pwd) {
 		String response = userService.loginAuthentication(id, uname, pwd);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
 	
 
 }

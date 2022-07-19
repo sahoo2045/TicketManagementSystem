@@ -5,21 +5,34 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ConstraintViolationException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoundException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Users;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.EmployeeRepo;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.UserRepo;
 
 @Service
 public class EmployeeService {
 
 	@Autowired
 	EmployeeRepo employeeRepo;
+	
+	@Autowired
+	UserRepo userRepo;
 
 	public Employee createEmployee(Employee emp) {
-
 		Employee response = employeeRepo.save(emp);
+		
+		Users userEntity = new Users();
+		userEntity.setEmployee(response);
+		userEntity.setUsername(emp.getEmp_name() + Math.random());
+		userEntity.setPassword(emp.getEmp_name() + emp.getEmp_id() + "#");
+
+		userRepo.save(userEntity);
 		return response;
 	}
 
@@ -32,7 +45,6 @@ public class EmployeeService {
 			m.setEmp_id(em.getEmp_id());
 			m.setEmp_name(em.getEmp_name());
 			m.setEmp_designation(em.getEmp_designation());
-			m.setEmp_type(em.getEmp_type());
 			empList.add(m);
 		}
 
@@ -44,8 +56,9 @@ public class EmployeeService {
 		try{
 			employeeRepo.deleteById(id);
 			return id;
-		}
-		catch(Exception ex){
+		}catch (DataIntegrityViolationException exception) {
+			throw new ConstraintViolationException("DataIntegrityViolationException", exception);
+		}catch(Exception ex){
 			throw new ItemNotFoundException("Data Unavailable", ex);
 		}
 		
