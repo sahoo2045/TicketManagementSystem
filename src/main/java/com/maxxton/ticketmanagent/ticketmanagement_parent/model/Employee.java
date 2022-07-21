@@ -2,19 +2,24 @@ package com.maxxton.ticketmanagent.ticketmanagement_parent.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.springframework.lang.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/*
+ * @author - Ashutosh Sahoo
+ */
 
 @Entity
 @Table(name = "T_Employee")
 public class Employee {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	@Column(name = "emp_id")
 	long emp_id;
 	@NonNull
@@ -23,10 +28,12 @@ public class Employee {
 	String emp_designation;
 
 	public long getEmp_id() {
+		
 		return emp_id;
 	}
 
 	public void setEmp_id(long emp_id) {
+
 		this.emp_id = emp_id;
 	}
 

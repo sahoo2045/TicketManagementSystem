@@ -17,16 +17,18 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableAutoConfiguration
 @EnableSwagger2
 public class TicketManagentApplication {
+
 	public static void main(String[] args) {
+
 		SpringApplication.run(TicketManagentApplication.class, args);
 	}
-	
+
 	@Bean
 	public Docket api() {
-	   return new Docket(DocumentationType.SWAGGER_2)
-	     .select()
-	     .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
-	     .build();
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors
+				.withClassAnnotation(RestController.class))
+				.build();
 	}
 
 }

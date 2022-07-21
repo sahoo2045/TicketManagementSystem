@@ -1,5 +1,7 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.model;
 
+import javax.persistence.Column;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +11,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.lang.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/*
+ * @author - Ashutosh Sahoo
+ */
 
 @Entity
 @Table(name = "T_Users")
@@ -22,9 +30,11 @@ public class Users {
 	@JoinColumn(name = "my_emp_id")
 	@NonNull
 	private Employee employee;
+	@Column(unique=true)
 	@NonNull
 	private String username;
 	@NonNull
+	@JsonIgnore
 	private String password;
 
 	public String getUsername() {

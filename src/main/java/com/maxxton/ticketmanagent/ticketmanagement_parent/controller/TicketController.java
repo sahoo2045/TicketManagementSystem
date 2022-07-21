@@ -23,6 +23,7 @@ public class TicketController {
 
 	@RequestMapping(value = "/ticket/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> createTicket(@RequestBody Ticket tkt) {
+		
 		Ticket response = ticketService.createTicket(tkt);
 		return new ResponseEntity<Ticket>(response, HttpStatus.CREATED);
 
@@ -30,6 +31,7 @@ public class TicketController {
 	
 	@RequestMapping(value = "/ticket/findById/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> findTicketById(@PathVariable long id) {
+		
 		Ticket response = ticketService.findTicketById(id);
 		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
 
@@ -45,6 +47,7 @@ public class TicketController {
 	
 	@RequestMapping(value = "/ticket/delete/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Long> deleteTicketById(@PathVariable long id) {
+		
 		Long response = ticketService.deleteTicketById(id);
 		return new ResponseEntity<Long>(response, HttpStatus.ACCEPTED);
 
@@ -52,6 +55,7 @@ public class TicketController {
 	
 	@RequestMapping(value = "/ticket/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> updateTicketById(@RequestBody Ticket tkt, @PathVariable long id) {
+		
 		Ticket response = ticketService.updateTicketById(tkt , id);
 		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
 
@@ -59,6 +63,7 @@ public class TicketController {
 
 	@RequestMapping(value = "/ticket/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteAllTicket() {
+		
 		ticketService.deleteAllEmployee();
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.ACCEPTED);
 

@@ -3,6 +3,7 @@ package com.maxxton.ticketmanagent.ticketmanagement_parent.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,12 +26,14 @@ public class EmployeeService {
 	UserRepo userRepo;
 
 	public Employee createEmployee(Employee emp) {
+
+		emp.setEmp_id(ThreadLocalRandom.current().nextInt(100000, 1000000));
 		Employee response = employeeRepo.save(emp);
 		
 		Users userEntity = new Users();
 		userEntity.setEmployee(response);
-		userEntity.setUsername(emp.getEmp_name() + Math.random());
-		userEntity.setPassword(emp.getEmp_name() + emp.getEmp_id() + "#");
+		userEntity.setUsername(emp.getEmp_name() + emp.getEmp_id() + "#");
+		userEntity.setPassword(emp.getEmp_name() + ThreadLocalRandom.current().nextInt(100000, 1000000));
 
 		userRepo.save(userEntity);
 		return response;
