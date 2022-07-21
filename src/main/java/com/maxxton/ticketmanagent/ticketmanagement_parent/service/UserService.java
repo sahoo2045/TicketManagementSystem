@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoundException;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Users;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.UserRepo;
 
@@ -29,14 +30,19 @@ public class UserService {
 	}
 
 	public List<Users> findAllUsers() {
-		Iterable<Users> response = userRepo.findAll();
+		Iterable<Users> userEntity = userRepo.findAll();
 		List<Users> userList = new ArrayList<>();
-		for (Users us : response) {
-			Users u = new Users();
-			u.setId(us.getId());
-			u.setUsername(us.getUsername());
-			u.setPassword(u.getPassword());
-			userList.add(u);
+		for (Users us : userEntity) {
+			Users user = new Users();
+			user.setId(us.getId());
+			user.setUsername(us.getUsername());
+			user.setPassword(us.getPassword());
+			Employee employee = new Employee();
+			employee.setEmp_id(us.getEmployee().getEmp_id());
+			employee.setEmp_designation(us.getEmployee().getEmp_designation());
+			employee.setEmp_name(us.getEmployee().getEmp_name());
+			user.setEmployee(employee);
+			userList.add(user);
 		}
 		return userList;
 	}
@@ -52,8 +58,8 @@ public class UserService {
 
 	public Users findUserById(long id) {
 
-		Optional<Users> user_id = userRepo.findById(id);
-		Users response = user_id.get();
+		Optional<Users> user = userRepo.findById(id);
+		Users response = user.get();
 		return response;
 	}
 
@@ -67,11 +73,10 @@ public class UserService {
 
 		Optional<Users> userEntity = userRepo.findById(id);
 		if (userEntity.isPresent()) {
-
 			Users response = userRepo.save(user);
 			return response;
 		} else {
-			throw new ItemNotFoundException("Item not found");
+			throw new ItemNotFoundException("User not found");
 		}
 	}
 
@@ -80,13 +85,8 @@ public class UserService {
 		Optional<Users> userEntity = userRepo.findById(id);
 		Users user = userEntity.get();
 
-		if (id == user.getId()) {
-			if(uname.equals(user.getUsername()) && pwd.equals(user.getPassword())) {
-				return "Authentication Successful";
-			}
-			else {
-				return "Authentication Unsuccessful";
-			}
+		if (uname.equals(user.getUsername()) && pwd.equals(user.getPassword())) {
+			return "Authentication Successful";
 		} else {
 			return "Authentication Unsuccessful";
 		}
@@ -100,7 +100,6 @@ public class UserService {
 			Users response = userRepo.save(userEntity);
 			return response;
 		} else {
-			logger.error("Error level log message");
 			throw new ItemNotFoundException("Password Doesnt match");
 
 		}

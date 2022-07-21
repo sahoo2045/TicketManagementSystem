@@ -1,7 +1,6 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.model;
 
 import javax.persistence.Column;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,7 +11,8 @@ import javax.persistence.Table;
 
 import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /*
  * @author - Ashutosh Sahoo
@@ -20,12 +20,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "T_Users")
+@JsonInclude(Include.NON_NULL)
 public class Users {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long Id;
-
 	@OneToOne
 	@JoinColumn(name = "my_emp_id")
 	@NonNull
@@ -34,7 +34,6 @@ public class Users {
 	@NonNull
 	private String username;
 	@NonNull
-	@JsonIgnore
 	private String password;
 
 	public String getUsername() {

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Ticket;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketStatus;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.service.TicketService;
 
 @RestController
@@ -23,49 +25,65 @@ public class TicketController {
 
 	@RequestMapping(value = "/ticket/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> createTicket(@RequestBody Ticket tkt) {
-		
+
 		Ticket response = ticketService.createTicket(tkt);
 		return new ResponseEntity<Ticket>(response, HttpStatus.CREATED);
-
 	}
-	
+
 	@RequestMapping(value = "/ticket/findById/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> findTicketById(@PathVariable long id) {
-		
+
 		Ticket response = ticketService.findTicketById(id);
 		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
-
 	}
 	
+	@RequestMapping(value = "/ticket/findByEmpId/{emp_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Ticket>> findTicketByEmpId(@PathVariable long emp_id) {
+
+		List<Ticket> response = ticketService.findTicketByEmpId(emp_id);
+		return new ResponseEntity<List<Ticket>>(response, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/ticket/findAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Ticket>> findAllTickets() {
 
 		List<Ticket> response = ticketService.findAllTickets();
 		return new ResponseEntity<List<Ticket>>(response, HttpStatus.OK);
-
 	}
-	
+
 	@RequestMapping(value = "/ticket/delete/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Long> deleteTicketById(@PathVariable long id) {
-		
+
 		Long response = ticketService.deleteTicketById(id);
 		return new ResponseEntity<Long>(response, HttpStatus.ACCEPTED);
-
 	}
-	
+
 	@RequestMapping(value = "/ticket/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> updateTicketById(@RequestBody Ticket tkt, @PathVariable long id) {
-		
-		Ticket response = ticketService.updateTicketById(tkt , id);
-		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
 
+		Ticket response = ticketService.updateTicketById(tkt, id);
+		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/ticket/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteAllTicket() {
-		
+
 		ticketService.deleteAllEmployee();
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.ACCEPTED);
-
 	}
+
+	@RequestMapping(value = "/ticket/assignTicketTo/{ticket_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Ticket> assignTicketTo(@PathVariable long ticket_id, @RequestBody Employee emp) {
+
+		Ticket response = ticketService.assignTicketTo(ticket_id, emp);
+		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/ticket/updateStatus/{ticket_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Ticket> updateStatus(@PathVariable long ticket_id, TicketStatus newStatus) {
+
+		Ticket response = ticketService.updateStatus(ticket_id, newStatus);
+		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
+	}
+
 }

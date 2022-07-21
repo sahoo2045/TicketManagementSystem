@@ -1,5 +1,9 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class ItemErrorResponse {
 
 	private int status;
@@ -8,9 +12,10 @@ public class ItemErrorResponse {
 	}
 
 	private String message;
-	private long timeStamp;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private Date timeStamp;
 
-	public ItemErrorResponse(int status, String message, long timeStamp) {
+	public ItemErrorResponse(int status, String message, Date timeStamp) {
 		this.status = status;
 		this.message = message;
 		this.timeStamp = timeStamp;
@@ -32,11 +37,11 @@ public class ItemErrorResponse {
 		this.message = message;
 	}
 
-	public long getTimeStamp() {
+	public Date getTimeStamp() {
 		return timeStamp;
 	}
 
-	public void setTimeStamp(long timeStamp) {
+	public void setTimeStamp(Date timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 

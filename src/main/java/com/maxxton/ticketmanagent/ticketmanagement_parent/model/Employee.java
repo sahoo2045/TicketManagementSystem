@@ -7,7 +7,8 @@ import javax.persistence.Table;
 
 import org.springframework.lang.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /*
  * @author - Ashutosh Sahoo
@@ -15,20 +16,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "T_Employee")
+@JsonInclude(Include.NON_NULL)
 public class Employee {
 
 	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonIgnore
 	@Column(name = "emp_id")
-	long emp_id;
+	private long emp_id;
 	@NonNull
-	String emp_name;
+	private String emp_name;
 	@NonNull
-	String emp_designation;
+	private String emp_designation;
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Ticket.class)
+//	@JoinTable(name = "ticket_assigned", joinColumns = { @JoinColumn(name = "emp_id") }, inverseJoinColumns = {
+//			@JoinColumn(name = "ticket_id") })
+//	//@JsonProperty(access = Access.READ_ONLY)
+//	@JsonIgnore
+//	private Set<Ticket> ticket = new HashSet<Ticket>();
 
 	public long getEmp_id() {
-		
+
 		return emp_id;
 	}
 
@@ -53,4 +59,9 @@ public class Employee {
 		this.emp_designation = emp_designation;
 	}
 
+	/*
+	 * public Set<Ticket> getTicket() { return ticket; }
+	 * 
+	 * public void setTicket(Set<Ticket> ticket) { this.ticket = ticket; }
+	 */
 }

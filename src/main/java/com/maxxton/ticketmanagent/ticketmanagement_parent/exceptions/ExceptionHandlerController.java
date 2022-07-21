@@ -1,5 +1,7 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions;
 
+import java.util.Date;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +18,7 @@ public class ExceptionHandlerController {
 		ItemErrorResponse errorResponse = new ItemErrorResponse();
 		errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
 		errorResponse.setMessage(ine.getMessage());
-		errorResponse.setTimeStamp(System.currentTimeMillis());
+		errorResponse.setTimeStamp(new Date());
 		return new ResponseEntity<ItemErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
 	}
 
@@ -25,7 +27,7 @@ public class ExceptionHandlerController {
 		ItemErrorResponse errorResponse = new ItemErrorResponse();
 		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 		errorResponse.setMessage(ex.getMessage());
-		errorResponse.setTimeStamp(System.currentTimeMillis());
+		errorResponse.setTimeStamp(new Date());
 		return new ResponseEntity<ItemErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 }
