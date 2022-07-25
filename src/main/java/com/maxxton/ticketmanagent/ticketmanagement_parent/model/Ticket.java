@@ -1,7 +1,8 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.model;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -10,7 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -25,19 +25,19 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 
 @Entity
-@Table(name = "T_Ticket")
+@Table(name = "t_ticket")
 @JsonInclude(Include.NON_NULL)
 public class Ticket {
 
 	@Id
 	@Column(name = "ticket_id")
-	private long ticket_no;
+	private long ticket_id;
 	@NonNull
 	private String ticket_summary;
 	@NonNull
 	private String ticket_description;
-	@ManyToMany
-	private Set<Employee> employee;
+	@OneToMany(cascade = {CascadeType.ALL})
+	private Set<TicketAssignTo> ticketAssignTo;
 	@NonNull
 	private long ticket_createdBy;
 	@NonNull
@@ -49,22 +49,20 @@ public class Ticket {
 	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date ticket_endDate;
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.REMOVE)
-    private Collection<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 	@Enumerated(EnumType.STRING)
 	@NonNull
 	private TicketStatus ticket_status;
 	@NonNull
 	private String ticket_type;
-	private double logWorkHours;
-	@NonNull
-	private boolean currentAssignee;
 
-	public long getTicket_no() {
-		return ticket_no;
+
+	public long getTicket_id() {
+		return ticket_id;
 	}
 
-	public void setTicket_no(long ticket_no) {
-		this.ticket_no = ticket_no;
+	public void setTicket_id(long ticket_id) {
+		this.ticket_id = ticket_id;
 	}
 
 	public String getTicket_summary() {
@@ -83,12 +81,12 @@ public class Ticket {
 		this.ticket_description = ticket_description;
 	}
 
-	public Set<Employee> getEmployee() {
-		return employee;
+	public Set<TicketAssignTo> getTicketAssignTo() {
+		return ticketAssignTo;
 	}
 
-	public void setEmployee(Set<Employee> employee) {
-		this.employee = employee;
+	public void setTicketAssignTo(Set<TicketAssignTo> ticketAssignTo) {
+		this.ticketAssignTo = ticketAssignTo;
 	}
 
 	public long getTicket_createdBy() {
@@ -131,11 +129,11 @@ public class Ticket {
 		this.ticket_endDate = ticket_endDate;
 	}
 
-	public Collection<Comment> getComments() {
+	public List<Comment> getComments() {
 		return comments;
 	}
 
-	public void setComments(Collection<Comment> comments) {
+	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
 
@@ -155,20 +153,4 @@ public class Ticket {
 		this.ticket_type = ticket_type;
 	}
 
-	public double getLogWorkHours() {
-		return logWorkHours;
-	}
-
-	public void setLogWorkHours(double logWorkHours) {
-		this.logWorkHours = logWorkHours;
-	}
-
-	public boolean isCurrentAssignee() {
-		return currentAssignee;
-	}
-
-	public void setCurrentAssignee(boolean currentAssignee) {
-		this.currentAssignee = currentAssignee;
-	}
-	
 }

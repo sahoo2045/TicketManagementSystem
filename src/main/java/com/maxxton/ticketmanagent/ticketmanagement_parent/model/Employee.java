@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 
 @Entity
-@Table(name = "T_Employee")
+@Table(name = "t_employee")
 @JsonInclude(Include.NON_NULL)
 public class Employee {
 

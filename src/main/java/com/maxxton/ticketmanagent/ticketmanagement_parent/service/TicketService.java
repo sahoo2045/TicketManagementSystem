@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,31 +17,41 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoundException;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Comment;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Ticket;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketAssignTo;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketStatus;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.CommentRepo;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.EmployeeRepo;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.TicketAssignToRepo;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.TicketRepo;
 
 @Service
 public class TicketService {
 
 	@Autowired
-	TicketRepo ticketRepo;
+	private TicketRepo ticketRepo;
 
 	@Autowired
-	EmployeeRepo employeeRepo;
+	private EmployeeRepo employeeRepo;
+
+	@Autowired
+	private CommentRepo commentRepo;
+
+	@Autowired
+	private TicketAssignToRepo ticketAssignToRepo;
 
 	Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	public Ticket createTicket(Ticket tkt) {
 		Ticket response = new Ticket();
-		tkt.setTicket_no(ThreadLocalRandom.current().nextInt(1000, 10000));
+		tkt.setTicket_id(ThreadLocalRandom.current().nextInt(1000, 10000));
 		tkt.setTicket_creationDate(new Date());
 		boolean userExists = employeeRepo.existsById(tkt.getTicket_createdBy());
 		if (userExists) {
 			if (tkt.getTicket_status() == TicketStatus.OPEN) {
-				response = ticketRepo.save(tkt);
+				response = ticketRepo.saveAndFlush(tkt);
 			} else {
 				throw new ItemNotFoundException("Ticket Status Should be in Open State");
 			}
@@ -59,7 +71,7 @@ public class TicketService {
 				throw new ItemNotFoundException("Status Update Not Allowed");
 			}
 			tkt.setTicket_createdBy(tktEntity.get().getTicket_createdBy());
-			Ticket response = ticketRepo.save(tkt);
+			Ticket response = ticketRepo.saveAndFlush(tkt);
 			return response;
 		} else {
 			throw new ItemNotFoundException("Item not found");
@@ -68,7 +80,9 @@ public class TicketService {
 
 	public Ticket findTicketById(long id) {
 		Optional<Ticket> tkt_id = ticketRepo.findById(id);
-		Ticket response = tkt_id.get();
+		Ticket ticketEntity = tkt_id.get();
+		ObjectMapper mapper = new ObjectMapper();
+		Ticket response = mapper.convertValue(ticketEntity, Ticket.class);
 		logger.info("User details found...");
 		return response;
 	}
@@ -108,27 +122,79 @@ public class TicketService {
 		Optional<Ticket> ticket = ticketRepo.findById(ticket_id);
 		if (ticket.isPresent()) {
 			Ticket ticketEntity = ticket.get();
-			Set<Employee> employeeSet = new HashSet<>();
-			employeeSet.add(emp);
-			ticketEntity.setEmployee(employeeSet);
-			ticketEntity.setTicket_lastUpdate(new Date());
-			Ticket response = ticketRepo.save(ticketEntity);
-			return response;
+			Set<TicketAssignTo> ticketAssignToSet = new HashSet<>();
+			TicketAssignTo assignToEmployee = new TicketAssignTo();
+
+			if (null != ticketEntity.getTicketAssignTo() || !ticketEntity.getTicketAssignTo().isEmpty()) {
+				boolean correctEmployee = false;
+				for (TicketAssignTo assign : ticketEntity.getTicketAssignTo()) {
+					if (assign.getEmployee().getEmp_id() == emp.getEmp_id()) {
+						assignToEmployee = assign;
+						correctEmployee = true;
+						break;
+					}
+					if (assign.isCurrentAssignee()) {
+						assignToEmployee = assign;
+					}
+				}
+				if (correctEmployee && assignToEmployee.isCurrentAssignee()) {
+					throw new ItemNotFoundException("The User Provided is already allocated currently to this ticket.");
+				} else if (correctEmployee && !assignToEmployee.isCurrentAssignee()) {
+					return assign(emp, ticketEntity, assignToEmployee);
+				} else {
+					return assign(emp, ticketEntity, assignToEmployee);
+				}
+
+			} else {
+				TicketAssignTo ticketAssignTo = new TicketAssignTo();
+				ticketAssignTo.setEmployee(emp);
+				ticketAssignTo.setTicket(ticketEntity);
+				ticketAssignTo.setLogWorkHours(0);
+				ticketAssignTo.setCurrentAssignee(true);
+				ticketAssignToSet.add(ticketAssignTo);
+				ticketEntity.setTicketAssignTo(ticketAssignToSet);
+				ticketEntity.setTicket_lastUpdate(new Date());
+				Ticket response = ticketRepo.saveAndFlush(ticketEntity);
+				return response;
+			}
 		} else {
-			throw new ItemNotFoundException("Ticket Details Not Found");
+			throw new ItemNotFoundException("Ticket Not Found.");
 		}
+	}
+
+	private Ticket assign(Employee emp, Ticket ticketEntity, TicketAssignTo assignToEmployee) {
+
+		Set<TicketAssignTo> ticketAssignToSet = new HashSet<>();
+		TicketAssignTo ticketAssignTo = new TicketAssignTo();
+		ticketAssignTo.setEmployee(emp);
+		ticketAssignTo.setTicket(ticketEntity);
+		ticketAssignTo.setLogWorkHours(0);
+		ticketAssignTo.setCurrentAssignee(true);
+		/* For Current User */
+		assignToEmployee.setCurrentAssignee(false);
+		ticketAssignToSet.add(assignToEmployee);
+		ticketEntity.setTicketAssignTo(ticketAssignToSet);
+		ticketEntity.setTicket_lastUpdate(new Date());
+		ticketRepo.saveAndFlush(ticketEntity);
+		/* For New User */
+		ticketAssignToSet = new HashSet<>();
+		ticketAssignToSet.add(ticketAssignTo);
+		ticketEntity.setTicketAssignTo(ticketAssignToSet);
+		ticketEntity.setTicket_lastUpdate(new Date());
+		Ticket response = ticketRepo.saveAndFlush(ticketEntity);
+		return response;
+
 	}
 
 	public List<Ticket> findTicketByEmpId(long emp_id) {
 
-		Set<Employee> employeeSet = new HashSet<>();
-		List<Ticket> ticketList = new ArrayList<>();
 		Optional<Employee> employeeOpt = employeeRepo.findById(emp_id);
 		if (employeeOpt.isPresent()) {
-			employeeSet.add(employeeOpt.get());
-			ticketList = ticketRepo.findByEmployeeIn(employeeSet);
-			if (ticketList.isEmpty()) {
-				throw new ItemNotFoundException("Ticket Details Not Found");
+			List<Ticket> ticketList = new ArrayList<>();
+			Set<TicketAssignTo> ticketAssignList = ticketAssignToRepo.findByTicketAssignTo_Employee(emp_id);
+			for (TicketAssignTo assign : ticketAssignList) {
+				Ticket ticketDetails = findTicketById(assign.getTicket().getTicket_id());
+				ticketList.add(ticketDetails);
 			}
 			return ticketList;
 		} else {
@@ -174,7 +240,7 @@ public class TicketService {
 			if (ticketEntity.getTicket_status() == TicketStatus.CLOSED) {
 				ticketEntity.setTicket_endDate(new Date());
 			}
-			Ticket response = ticketRepo.save(ticketEntity);
+			Ticket response = ticketRepo.saveAndFlush(ticketEntity);
 			return response;
 		} else {
 			throw new ItemNotFoundException("Ticket Details Not Found");
@@ -186,22 +252,43 @@ public class TicketService {
 		Ticket response = new Ticket();
 		if (ticket.isPresent()) {
 			Ticket ticketEntity = ticket.get();
-			if (null != ticketEntity.getEmployee() || !ticketEntity.getEmployee().isEmpty()) {
+			TicketAssignTo assignToEmployee = new TicketAssignTo();
+			Set<TicketAssignTo> assignToSet = new HashSet<>();
+			if (null != ticketEntity.getTicketAssignTo() || !ticketEntity.getTicketAssignTo().isEmpty()) {
 				boolean correctEmployee = false;
-				for (Employee emEntity : ticketEntity.getEmployee()) {
-					if (emEntity.getEmp_id() == emp.getEmp_id()) {
+				for (TicketAssignTo assign : ticketEntity.getTicketAssignTo()) {
+					if (assign.getEmployee().getEmp_id() == emp.getEmp_id()) {
+						assignToEmployee = assign;
 						correctEmployee = true;
 						break;
 					}
 				}
-				if (ticketEntity.isCurrentAssignee()) {
-					ticketEntity.setLogWorkHours(ticketEntity.getLogWorkHours() + workHours);
-					response = ticketRepo.save(ticketEntity);
+				if (correctEmployee == true && assignToEmployee.isCurrentAssignee()) {
+					assignToEmployee.setLogWorkHours(assignToEmployee.getLogWorkHours() + workHours);
+					assignToSet.add(assignToEmployee);
+					ticketEntity.setTicketAssignTo(assignToSet);
+					response = ticketRepo.saveAndFlush(ticketEntity);
+				} else {
+					throw new ItemNotFoundException("The User Provided is not allocated currently to this ticket.");
 				}
+			} else {
+				throw new ItemNotFoundException("Ticket Not Assigned To Anyone yet.");
 			}
 		}
 
 		return response;
 	}
 
+	public Ticket saveComment(@Valid Comment comment) {
+		Optional<Ticket> ticket = ticketRepo.findById(comment.getTicket().getTicket_id());
+		if (ticket.isPresent()) {
+			Ticket ticketEntity = ticket.get();
+			commentRepo.saveAndFlush(comment);
+			ticketEntity.setTicket_lastUpdate(new Date());
+			Ticket response = ticketRepo.saveAndFlush(ticketEntity);
+			return response;
+		} else {
+			throw new ItemNotFoundException("Ticket Details Not Found");
+		}
+	}
 }
