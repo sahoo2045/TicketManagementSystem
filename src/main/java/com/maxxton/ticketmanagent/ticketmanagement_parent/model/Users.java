@@ -25,6 +25,7 @@ public class Users {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_id")
 	private Long Id;
 	@OneToOne
 	@JoinColumn(name = "my_emp_id")

@@ -26,6 +26,7 @@ public class UserService {
 
 	public Users createUsers(Users user) {
 		Users response = userRepo.save(user);
+		logger.info("User created Successfully");
 		return response;
 	}
 
@@ -44,6 +45,7 @@ public class UserService {
 			user.setEmployee(employee);
 			userList.add(user);
 		}
+		logger.info("E created Successfully");
 		return userList;
 	}
 

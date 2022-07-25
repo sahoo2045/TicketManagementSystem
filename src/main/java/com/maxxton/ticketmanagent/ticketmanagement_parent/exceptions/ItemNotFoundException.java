@@ -4,7 +4,7 @@ package com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions;
 public class ItemNotFoundException extends RuntimeException{
 
     public ItemNotFoundException(String message) {
-        super();
+        super(message);
     }
 
     public ItemNotFoundException(String message, Throwable cause) {

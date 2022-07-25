@@ -26,12 +26,6 @@ public class Employee {
 	private String emp_name;
 	@NonNull
 	private String emp_designation;
-//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Ticket.class)
-//	@JoinTable(name = "ticket_assigned", joinColumns = { @JoinColumn(name = "emp_id") }, inverseJoinColumns = {
-//			@JoinColumn(name = "ticket_id") })
-//	//@JsonProperty(access = Access.READ_ONLY)
-//	@JsonIgnore
-//	private Set<Ticket> ticket = new HashSet<Ticket>();
 
 	public long getEmp_id() {
 
@@ -64,4 +58,5 @@ public class Employee {
 	 * 
 	 * public void setTicket(Set<Ticket> ticket) { this.ticket = ticket; }
 	 */
+
 }

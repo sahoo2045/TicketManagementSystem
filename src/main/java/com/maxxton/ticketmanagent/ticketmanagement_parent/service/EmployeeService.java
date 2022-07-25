@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class EmployeeService {
 	
 	@Autowired
 	UserRepo userRepo;
+	
+	Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	public Employee createEmployee(Employee emp) {
 
@@ -36,6 +40,8 @@ public class EmployeeService {
 		userEntity.setPassword(emp.getEmp_name() + ThreadLocalRandom.current().nextInt(100000, 1000000));
 
 		userRepo.save(userEntity);
+		logger.info("Employee created successfully with user credentials...");
+		
 		return response;
 	}
 
@@ -50,7 +56,8 @@ public class EmployeeService {
 			m.setEmp_designation(em.getEmp_designation());
 			empList.add(m);
 		}
-
+		
+		logger.info("List of all Employees");
 		return empList;
 	}
 
@@ -58,12 +65,16 @@ public class EmployeeService {
 		
 		try{
 			employeeRepo.deleteById(id);
+			logger.info("Employee Deleted");
 			return id;
 		}catch (DataIntegrityViolationException exception) {
+			logger.error("Data Integrity Violation");
 			throw new ConstraintViolationException("DataIntegrityViolationException", exception);
 		}catch(Exception ex){
+			logger.error("Employee not found");
 			throw new ItemNotFoundException("Data Unavailable", ex);
 		}
+		
 		
 	}
 
@@ -73,7 +84,9 @@ public class EmployeeService {
 		
 		 Optional<Employee> emp_id = employeeRepo.findById(id);
 		 Employee response = emp_id.get();
+		 logger.info("Employee found");
 		 return response;
+		 
 		 
 	}
 
@@ -83,6 +96,7 @@ public class EmployeeService {
 		if(empEntity.isPresent()) {
 			
 			Employee response = employeeRepo.save(emp);
+			logger.info("Employee updated successfully");
 			return response;
 		}
 		else
@@ -96,8 +110,10 @@ public class EmployeeService {
 
 		try{
 			employeeRepo.deleteAll();
+			logger.info("All employees deleted...");
 		}
 		catch(Exception ex){
+			logger.warn("Could not find more employees to delete...");
 			throw new ItemNotFoundException("Data Unavailable", ex);
 		}
 		
