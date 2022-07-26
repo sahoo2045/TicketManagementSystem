@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoundException;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.InvalidIdException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Comment;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Ticket;
-import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketAssignTo;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketStatus;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.service.TicketService;
 
@@ -57,7 +56,7 @@ public class TicketController {
 	}
 
 	@RequestMapping(value = "/ticket/delete/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Long> deleteTicketById(@PathVariable long id) {
+	public ResponseEntity<Long> deleteTicketById(@PathVariable long id) throws Exception {
 
 		Long response = ticketService.deleteTicketById(id);
 		return new ResponseEntity<Long>(response, HttpStatus.ACCEPTED);
@@ -66,16 +65,16 @@ public class TicketController {
 	@RequestMapping(value = "/ticket/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> updateTicketById(@RequestBody Ticket tkt, @PathVariable long id) {
 		if (tkt.getTicket_id() != id) {
-			throw new ItemNotFoundException("Invalid Id OR Ticket_no");
+			throw new InvalidIdException("Invalid Id OR Ticket_no");
 		}
 		Ticket response = ticketService.updateTicketById(tkt, id);
 		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/ticket/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> deleteAllTicket() {
+	public ResponseEntity<?> deleteAllTicket() throws Exception {
 
-		ticketService.deleteAllEmployee();
+		ticketService.deleteAllTicket();
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.ACCEPTED);
 	}
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoundException;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.PasswordMismatchEception;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Users;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.UserRepo;
@@ -33,42 +34,53 @@ public class UserService {
 	public List<Users> findAllUsers() {
 		Iterable<Users> userEntity = userRepo.findAll();
 		List<Users> userList = new ArrayList<>();
-		for (Users us : userEntity) {
-			Users user = new Users();
-			user.setId(us.getId());
-			user.setUsername(us.getUsername());
-			user.setPassword(us.getPassword());
-			Employee employee = new Employee();
-			employee.setEmp_id(us.getEmployee().getEmp_id());
-			employee.setEmp_designation(us.getEmployee().getEmp_designation());
-			employee.setEmp_name(us.getEmployee().getEmp_name());
-			user.setEmployee(employee);
-			userList.add(user);
+		if (null == userEntity) {
+			throw new ItemNotFoundException("User Details Not Found");
+		} else {
+			for (Users us : userEntity) {
+				Users user = new Users();
+				user.setId(us.getId());
+				user.setUsername(us.getUsername());
+				user.setPassword(us.getPassword());
+				Employee employee = new Employee();
+				employee.setEmp_id(us.getEmployee().getEmp_id());
+				employee.setEmp_designation(us.getEmployee().getEmp_designation());
+				employee.setEmp_name(us.getEmployee().getEmp_name());
+				user.setEmployee(employee);
+				userList.add(user);
+			}
+			logger.info("Users Found Successfully");
+			return userList;
 		}
-		logger.info("E created Successfully");
-		return userList;
 	}
 
-	public Long deletUserById(long id) {
+	public Long deletUserById(long id) throws Exception {
 		try {
 			userRepo.deleteById(id);
 			return id;
 		} catch (Exception ex) {
-			throw new ItemNotFoundException("Data Unavailable", ex);
+			throw new Exception(ex);
 		}
 	}
 
 	public Users findUserById(long id) {
 
 		Optional<Users> user = userRepo.findById(id);
-		Users response = user.get();
-		return response;
+		if (!user.isPresent()) {
+			throw new ItemNotFoundException("User Details Not Found");
+		} else {
+			Users response = user.get();
+			return response;
+		}
 	}
 
-	public Users deleteAllUser() {
+	public void deleteAllUser() throws Exception {
+		try {
+			userRepo.deleteAll();
+		} catch (Exception ex) {
+			throw new Exception(ex);
+		}
 
-		userRepo.deleteAll();
-		return null;
 	}
 
 	public Users updateUserById(Users user, long id) {
@@ -82,39 +94,33 @@ public class UserService {
 		}
 	}
 
-	public String loginAuthentication(long id, String uname, String pwd) {
-
-		Optional<Users> userEntity = userRepo.findById(id);
-		Users user = userEntity.get();
-
-		if (uname.equals(user.getUsername()) && pwd.equals(user.getPassword())) {
-			return "Authentication Successful";
-		} else {
-			return "Authentication Unsuccessful";
-		}
-	}
-
 	public Users updatePassword(String oldPassword, long employee_id, String newPassword) {
 
 		Users userEntity = userRepo.findByEmployeeId(employee_id);
-		if (userEntity.getPassword() == oldPassword) {
-			userEntity.setPassword(newPassword);
-			Users response = userRepo.save(userEntity);
-			return response;
+		if (null == userEntity) {
+			throw new ItemNotFoundException("User not found");
 		} else {
-			throw new ItemNotFoundException("Password Doesnt match");
+			if (userEntity.getPassword() == oldPassword) {
+				userEntity.setPassword(newPassword);
+				Users response = userRepo.save(userEntity);
+				return response;
+			} else {
+				throw new PasswordMismatchEception("Password Doesnt match");
 
+			}
 		}
-
 	}
 
 	public Users forgotPassword(long employee_id, String newPassword) {
 
 		Users userEntity = userRepo.findByEmployeeId(employee_id);
-		userEntity.setPassword(newPassword);
-		Users response = userRepo.save(userEntity);
-		return response;
-
+		if (null == userEntity) {
+			throw new ItemNotFoundException("User not found");
+		} else {
+			userEntity.setPassword(newPassword);
+			Users response = userRepo.save(userEntity);
+			return response;
+		}
 	}
 
 }

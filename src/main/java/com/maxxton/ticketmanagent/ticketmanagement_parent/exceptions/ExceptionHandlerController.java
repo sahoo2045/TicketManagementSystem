@@ -23,6 +23,51 @@ public class ExceptionHandlerController {
 	}
 
 	@ExceptionHandler
+	public ResponseEntity<ItemErrorResponse> handleException(DataIntegrityViolationException ex) {
+		ItemErrorResponse errorResponse = new ItemErrorResponse();
+		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setTimeStamp(new Date());
+		return new ResponseEntity<ItemErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ItemErrorResponse> handleException(InvalidIdException ex) {
+		ItemErrorResponse errorResponse = new ItemErrorResponse();
+		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setTimeStamp(new Date());
+		return new ResponseEntity<ItemErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ItemErrorResponse> handleException(PasswordMismatchEception ex) {
+		ItemErrorResponse errorResponse = new ItemErrorResponse();
+		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setTimeStamp(new Date());
+		return new ResponseEntity<ItemErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ItemErrorResponse> handleException(InvalidAssigneeException ex) {
+		ItemErrorResponse errorResponse = new ItemErrorResponse();
+		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setTimeStamp(new Date());
+		return new ResponseEntity<ItemErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ItemErrorResponse> handleException(InvalidStatusException ex) {
+		ItemErrorResponse errorResponse = new ItemErrorResponse();
+		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		errorResponse.setMessage(ex.getMessage());
+		errorResponse.setTimeStamp(new Date());
+		return new ResponseEntity<ItemErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler
 	public ResponseEntity<ItemErrorResponse> handleException(Exception ex) {
 		ItemErrorResponse errorResponse = new ItemErrorResponse();
 		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());

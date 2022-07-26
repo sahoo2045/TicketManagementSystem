@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.InvalidAssigneeException;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.InvalidStatusException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoundException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Comment;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
@@ -53,7 +55,7 @@ public class TicketService {
 			if (tkt.getTicket_status() == TicketStatus.OPEN) {
 				response = ticketRepo.saveAndFlush(tkt);
 			} else {
-				throw new ItemNotFoundException("Ticket Status Should be in Open State");
+				throw new InvalidStatusException("Ticket Status Should be in Open State");
 			}
 
 		} else {
@@ -68,7 +70,7 @@ public class TicketService {
 		if (tktEntity.isPresent()) {
 			tkt.setTicket_lastUpdate(new Date());
 			if (tkt.getTicket_status() != tktEntity.get().getTicket_status()) {
-				throw new ItemNotFoundException("Status Update Not Allowed");
+				throw new InvalidStatusException("Status Update Not Allowed");
 			}
 			tkt.setTicket_createdBy(tktEntity.get().getTicket_createdBy());
 			Ticket response = ticketRepo.saveAndFlush(tkt);
@@ -80,40 +82,50 @@ public class TicketService {
 
 	public Ticket findTicketById(long id) {
 		Optional<Ticket> tkt_id = ticketRepo.findById(id);
-		Ticket ticketEntity = tkt_id.get();
-		ObjectMapper mapper = new ObjectMapper();
-		Ticket response = mapper.convertValue(ticketEntity, Ticket.class);
-		logger.info("User details found...");
-		return response;
+		if(!tkt_id.isPresent()) {
+			throw new ItemNotFoundException("Ticket Details Not Found");
+		}else {
+			Ticket ticketEntity = tkt_id.get();
+			ObjectMapper mapper = new ObjectMapper();
+			Ticket response = mapper.convertValue(ticketEntity, Ticket.class);
+			logger.info("User details found...");
+			return response;
+		}
+		
 	}
 
 	public List<Ticket> findAllTickets() {
 		Iterable<Ticket> ticketEntity = ticketRepo.findAll();
 		List<Ticket> tktList = new ArrayList<>();
-		for (Ticket ticket : ticketEntity) {
-			ObjectMapper mapper = new ObjectMapper();
-			Ticket tkt = mapper.convertValue(ticket, Ticket.class);
-			tktList.add(tkt);
+		if(null == ticketEntity) {
+			throw new ItemNotFoundException("Ticket Details Not Found");
+		}else {
+			for (Ticket ticket : ticketEntity) {
+				ObjectMapper mapper = new ObjectMapper();
+				Ticket tkt = mapper.convertValue(ticket, Ticket.class);
+				tktList.add(tkt);
+			}
+			return tktList;
 		}
-		return tktList;
+		
 	}
 
-	public Long deleteTicketById(long id) {
+	public Long deleteTicketById(long id) throws Exception {
 		try {
 			ticketRepo.deleteById(id);
 			return id;
 		} catch (Exception ex) {
-			throw new ItemNotFoundException("Data Unavailable", ex);
+			throw new Exception(ex);
 		}
 
 	}
 
-	public void deleteAllEmployee() {
+	public void deleteAllTicket() throws Exception {
 
 		try {
 			ticketRepo.deleteAll();
 		} catch (Exception ex) {
-			throw new ItemNotFoundException("Data Unavailable", ex);
+			throw new Exception(ex);
 		}
 	}
 
@@ -198,7 +210,7 @@ public class TicketService {
 			}
 			return ticketList;
 		} else {
-			throw new ItemNotFoundException("Employee Details Not Found");
+			throw new ItemNotFoundException("No employee details found");
 		}
 	}
 
@@ -234,7 +246,7 @@ public class TicketService {
 			if (correctStatus == true) {
 				ticketEntity.setTicket_status(newStatus);
 			} else {
-				throw new ItemNotFoundException("Wrong Ticket status");
+				throw new InvalidStatusException("Wrong Ticket status");
 			}
 			ticketEntity.setTicket_lastUpdate(new Date());
 			if (ticketEntity.getTicket_status() == TicketStatus.CLOSED) {
@@ -264,16 +276,19 @@ public class TicketService {
 					}
 				}
 				if (correctEmployee == true && assignToEmployee.isCurrentAssignee()) {
+					
 					assignToEmployee.setLogWorkHours(assignToEmployee.getLogWorkHours() + workHours);
 					assignToSet.add(assignToEmployee);
 					ticketEntity.setTicketAssignTo(assignToSet);
 					response = ticketRepo.saveAndFlush(ticketEntity);
 				} else {
-					throw new ItemNotFoundException("The User Provided is not allocated currently to this ticket.");
+					throw new InvalidAssigneeException("The User Provided is not allocated currently to this ticket.");
 				}
 			} else {
-				throw new ItemNotFoundException("Ticket Not Assigned To Anyone yet.");
+				throw new InvalidAssigneeException("Ticket Not Assigned To Anyone yet.");
 			}
+		}else {
+			throw new ItemNotFoundException("Ticket not found");
 		}
 
 		return response;

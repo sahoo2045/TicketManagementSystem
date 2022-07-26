@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.InvalidIdException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Users;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.service.UserService;
 
@@ -36,7 +37,9 @@ public class UserController {
 	
 	@RequestMapping(value = "/user/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Users> updateUser(@RequestBody Users user, @PathVariable long id) {
-		
+		if (user.getId() != id) {
+			throw new InvalidIdException("Invalid Id OR user_Id");
+		}
 		Users response = userService.updateUserById(user, id);
 		return new ResponseEntity<Users>(response, HttpStatus.OK);
 
@@ -76,7 +79,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/user/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> deleteAllUser() {
+	public ResponseEntity<?> deleteAllUser() throws Exception {
 		
 		userService.deleteAllUser();
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.ACCEPTED);
@@ -84,19 +87,11 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/user/delete/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Long> deletUserById(@PathVariable long id) {
+	public ResponseEntity<Long> deletUserById(@PathVariable long id) throws Exception {
 		
 		Long response = userService.deletUserById(id);
 		return new ResponseEntity<Long>(response, HttpStatus.ACCEPTED);
 		
-	}
-
-	@RequestMapping(value = "/user/login/{id}/{uname}/{pwd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> loginAuthentication(@PathVariable long id, @PathVariable String uname, @PathVariable String pwd) {
-		
-		String response = userService.loginAuthentication(id, uname, pwd);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-
 	}
 
 }

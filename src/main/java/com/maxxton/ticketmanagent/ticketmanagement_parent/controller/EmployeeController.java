@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.InvalidIdException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.service.EmployeeService;
 
@@ -58,16 +59,18 @@ public class EmployeeController {
 	
 	@RequestMapping(value = "/employee/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Employee> updateEmployeeById(@RequestBody Employee emp, @PathVariable long id) {
-		
+		if (emp.getEmp_id() != id) {
+			throw new InvalidIdException("Invalid Id OR Employee_Id");
+		}
 		Employee response = employeeService.updateEmployeeById(emp , id);
 		return new ResponseEntity<Employee>(response, HttpStatus.OK);
 
 	}
 	
 	@RequestMapping(value = "/employee/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> deleteAllEmployee() {
+	public ResponseEntity<?> deleteAllEmployee() throws Exception {
 		
-		employeeService.deleteAllEmployee();
+			employeeService.deleteAllEmployee();
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.ACCEPTED);
 		
 	}
