@@ -24,17 +24,21 @@ public class SingleUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+		/* If user is not present, then creating default admin employee and user */
+		
 		if(userRepo.count() == 0) {
 			Users defaultUser = new Users();
 			defaultUser.setUsername("admin");
 			defaultUser.setPassword("admin");
 			Employee defaultEmployee = new Employee();
-			defaultEmployee.setEmp_name("admin");
-			defaultEmployee.setEmp_designation("admin");
+			defaultEmployee.setName("admin");
+			defaultEmployee.setDesignation("admin");
 			defaultUser.setEmployee(defaultEmployee);
 			employeeRepo.save(defaultEmployee);
 			userRepo.save(defaultUser);
 		}
+		
+		/* For validating user from DB */
 		
 		Users user = userRepo.findbyUsername(username);
 		if (user == null) {

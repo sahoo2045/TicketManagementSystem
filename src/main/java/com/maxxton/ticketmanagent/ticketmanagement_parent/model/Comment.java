@@ -17,28 +17,31 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "comment")
+@JsonInclude(Include.NON_NULL)
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
+    @Column(name = "commentId")
     private Long id;
 
     @Column(name = "body")
     private String body;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "create_date", nullable = false, updatable = false)
+    @Column(name = "createDate", nullable = false, updatable = false)
     @CreationTimestamp
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date createDate;
 
     @ManyToOne
-    @JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id")
+    @JoinColumn(name = "ticketId", referencedColumnName = "ticketId")
     @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Ticket ticket;

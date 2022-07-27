@@ -15,42 +15,42 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 
 @Entity
-@Table(name = "t_employee")
+@Table(name = "employee")
 @JsonInclude(Include.NON_NULL)
 public class Employee {
 
 	@Id
-	@Column(name = "emp_id")
-	private long emp_id;
+	@Column(name = "id")
+	private long id;
 	@NonNull
-	private String emp_name;
+	@Column(name = "name")
+	private String name;
 	@NonNull
-	private String emp_designation;
+	@Column(name = "designation")
+	private String designation;
 
-	public long getEmp_id() {
-
-		return emp_id;
+	public long getId() {
+		return id;
 	}
 
-	public void setEmp_id(long emp_id) {
-
-		this.emp_id = emp_id;
+	public void setId(long id) {
+		this.id = id;
 	}
 
-	public String getEmp_name() {
-		return emp_name;
+	public String getName() {
+		return name;
 	}
 
-	public void setEmp_name(String emp_name) {
-		this.emp_name = emp_name;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getEmp_designation() {
-		return emp_designation;
+	public String getDesignation() {
+		return designation;
 	}
 
-	public void setEmp_designation(String emp_designation) {
-		this.emp_designation = emp_designation;
+	public void setDesignation(String designation) {
+		this.designation = designation;
 	}
 
 	/*

@@ -9,10 +9,10 @@ import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Users;
 @Repository
 public interface UserRepo extends JpaRepository<Users, Long> {
 
-	@Query( value = "SELECT * FROM T_Users WHERE my_emp_id =  ?1", nativeQuery = true)
+	@Query( value = "SELECT * FROM users WHERE employee_id =  ?1", nativeQuery = true)
 	Users findByEmployeeId(long employee_id);
 	
-	@Query( value = "SELECT * FROM T_Users WHERE username =  ?1", nativeQuery = true)	
+	@Query( value = "SELECT * FROM users WHERE username =  ?1", nativeQuery = true)	
 	Users findbyUsername(String username);
 
 }

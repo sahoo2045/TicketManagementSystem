@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.InvalidIdException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoundException;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.PasswordMismatchEception;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
@@ -26,8 +27,12 @@ public class UserService {
 	Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	public Users createUsers(Users user) {
+		Users userDetails = userRepo.findByEmployeeId(user.getEmployee().getId());
+		if (null != userDetails) {
+			throw new InvalidIdException("Employee id already exists");
+		}
 		Users response = userRepo.save(user);
-		logger.info("User created Successfully");
+		logger.info("User created successfully");
 		return response;
 	}
 
@@ -43,9 +48,9 @@ public class UserService {
 				user.setUsername(us.getUsername());
 				user.setPassword(us.getPassword());
 				Employee employee = new Employee();
-				employee.setEmp_id(us.getEmployee().getEmp_id());
-				employee.setEmp_designation(us.getEmployee().getEmp_designation());
-				employee.setEmp_name(us.getEmployee().getEmp_name());
+				employee.setId(us.getEmployee().getId());
+				employee.setDesignation(us.getEmployee().getDesignation());
+				employee.setName(us.getEmployee().getName());
 				user.setEmployee(employee);
 				userList.add(user);
 			}
@@ -87,6 +92,10 @@ public class UserService {
 
 		Optional<Users> userEntity = userRepo.findById(id);
 		if (userEntity.isPresent()) {
+			Users userDetails = userRepo.findByEmployeeId(user.getEmployee().getId());
+			if (null != userDetails && (userDetails.getEmployee().getId() != user.getEmployee().getId())) {
+				throw new InvalidIdException("Employee id Cannot be Modified.");
+			}
 			Users response = userRepo.save(user);
 			return response;
 		} else {
@@ -94,18 +103,18 @@ public class UserService {
 		}
 	}
 
-	public Users updatePassword(String oldPassword, long employee_id, String newPassword) {
+	public Users resetPassword(String oldPassword, long employee_id, String newPassword) {
 
 		Users userEntity = userRepo.findByEmployeeId(employee_id);
 		if (null == userEntity) {
 			throw new ItemNotFoundException("User not found");
 		} else {
-			if (userEntity.getPassword() == oldPassword) {
+			if (userEntity.getPassword().equals(oldPassword)) {
 				userEntity.setPassword(newPassword);
 				Users response = userRepo.save(userEntity);
 				return response;
 			} else {
-				throw new PasswordMismatchEception("Password Doesnt match");
+				throw new PasswordMismatchEception("Invalid Old Password");
 
 			}
 		}
@@ -120,6 +129,15 @@ public class UserService {
 			userEntity.setPassword(newPassword);
 			Users response = userRepo.save(userEntity);
 			return response;
+		}
+	}
+
+	public Users findUserByEmployeeId(long emp_id) {
+		Users userEntity = userRepo.findByEmployeeId(emp_id);
+		if (null == userEntity) {
+			throw new ItemNotFoundException("User not found");
+		} else {
+			return userEntity;
 		}
 	}
 

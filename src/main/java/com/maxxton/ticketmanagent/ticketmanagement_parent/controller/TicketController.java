@@ -18,8 +18,11 @@ import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.InvalidIdEx
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Comment;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Ticket;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketAssignToDao;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketStatus;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.service.TicketService;
+
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 public class TicketController {
@@ -55,6 +58,7 @@ public class TicketController {
 		return new ResponseEntity<List<Ticket>>(response, HttpStatus.OK);
 	}
 
+	@ApiIgnore
 	@RequestMapping(value = "/ticket/delete/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Long> deleteTicketById(@PathVariable long id) throws Exception {
 
@@ -64,13 +68,14 @@ public class TicketController {
 
 	@RequestMapping(value = "/ticket/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> updateTicketById(@RequestBody Ticket tkt, @PathVariable long id) {
-		if (tkt.getTicket_id() != id) {
+		if (tkt.getTicketId() != id) {
 			throw new InvalidIdException("Invalid Id OR Ticket_no");
 		}
 		Ticket response = ticketService.updateTicketById(tkt, id);
 		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
 	}
 
+	@ApiIgnore
 	@RequestMapping(value = "/ticket/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteAllTicket() throws Exception {
 
@@ -79,10 +84,10 @@ public class TicketController {
 	}
 
 	@RequestMapping(value = "/ticket/assignTicketTo/{ticket_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Ticket> assignTicketTo(@PathVariable long ticket_id, @RequestBody Employee emp) {
+	public ResponseEntity<TicketAssignToDao> assignTicketTo(@PathVariable long ticket_id, @RequestBody Employee emp) {
 
-		Ticket response = ticketService.assignTicketTo(ticket_id, emp);
-		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
+		TicketAssignToDao response = ticketService.assignTicketTo(ticket_id, emp);
+		return new ResponseEntity<TicketAssignToDao>(response, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/ticket/updateStatus/{ticket_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -100,8 +105,8 @@ public class TicketController {
 		return new ResponseEntity<Ticket>(response, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/ticket/createComment", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Ticket> createNewPost(@RequestBody @Valid Comment comment) {
+	@RequestMapping(value = "/ticket/addComment", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Ticket> addComment(@RequestBody @Valid Comment comment) {
 
 		Ticket response = ticketService.saveComment(comment);
 		return new ResponseEntity<Ticket>(response, HttpStatus.OK);

@@ -42,7 +42,7 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping(value = "/employee/delete/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Long> deleteEmployee(@PathVariable long id) {
+	public ResponseEntity<Long> deleteEmployee(@PathVariable long id) throws Exception {
 		
 		Long response = employeeService.deleteEmployeeById(id);
 		return new ResponseEntity<Long>(response, HttpStatus.ACCEPTED);
@@ -59,12 +59,11 @@ public class EmployeeController {
 	
 	@RequestMapping(value = "/employee/update/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Employee> updateEmployeeById(@RequestBody Employee emp, @PathVariable long id) {
-		if (emp.getEmp_id() != id) {
+		if (emp.getId() != id) {
 			throw new InvalidIdException("Invalid Id OR Employee_Id");
 		}
 		Employee response = employeeService.updateEmployeeById(emp , id);
 		return new ResponseEntity<Employee>(response, HttpStatus.OK);
-
 	}
 	
 	@RequestMapping(value = "/employee/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +71,6 @@ public class EmployeeController {
 		
 			employeeService.deleteAllEmployee();
 		return new ResponseEntity<>("Deleted Successfully", HttpStatus.ACCEPTED);
-		
 	}
 	
 	

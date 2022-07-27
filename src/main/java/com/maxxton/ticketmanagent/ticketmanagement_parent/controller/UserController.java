@@ -45,10 +45,10 @@ public class UserController {
 
 	}
 	
-	@RequestMapping(value = "/user/updatePassword/{employee_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Users> updatePassword( String oldPassword, @PathVariable long employee_id, String newPassword) {
+	@RequestMapping(value = "/user/resetPassword/{employee_id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Users> resetPassword(String oldPassword, @PathVariable long employee_id, String newPassword) {
 		
-		Users response = userService.updatePassword(oldPassword, employee_id, newPassword);
+		Users response = userService.resetPassword(oldPassword, employee_id, newPassword);
 		return new ResponseEntity<Users>(response, HttpStatus.OK);
 
 	}
@@ -74,6 +74,14 @@ public class UserController {
 	public ResponseEntity<Users> findUserById(@PathVariable long id) {
 		
 		Users response = userService.findUserById(id);
+		return new ResponseEntity<Users>(response, HttpStatus.OK);
+
+	}
+	
+	@RequestMapping(value = "/user/findByEmployeeId/{emp_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Users> findUserByEmployeeId(@PathVariable long emp_id) {
+		
+		Users response = userService.findUserByEmployeeId(emp_id);
 		return new ResponseEntity<Users>(response, HttpStatus.OK);
 
 	}

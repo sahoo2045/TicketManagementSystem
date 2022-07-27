@@ -17,6 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Autowired
 	private SingleUserDetailsService singleUserDetailsService;
 	
+	/* For user authentication */
 	@Bean
 	public AuthenticationProvider authProvider() {
 
@@ -27,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 	}
 	
+	/* For giving permission for all operations */
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()

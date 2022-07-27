@@ -19,22 +19,23 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 
 @Entity
-@Table(name = "t_users")
+@Table(name = "users")
 @JsonInclude(Include.NON_NULL)
 public class Users {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
-	private Long Id;
+	@Column(name = "id")
+	private long id;
 	@OneToOne
-	@JoinColumn(name = "my_emp_id")
+	@JoinColumn(name = "employeeId")
 	@NonNull
 	private Employee employee;
-	@Column(unique=true)
+	@Column(name = "username", unique=true)
 	@NonNull
 	private String username;
 	@NonNull
+	@Column(name = "password")
 	private String password;
 
 	public String getUsername() {
@@ -53,12 +54,13 @@ public class Users {
 		this.password = password;
 	}
 
-	public Long getId() {
-		return Id;
+
+	public long getId() {
+		return id;
 	}
 
-	public void setId(Long id) {
-		Id = id;
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public Employee getEmployee() {

@@ -18,56 +18,68 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
-@Table(name = "t_ticket_assignTo")
+@Table(name = "ticketAssignedTo")
 @JsonInclude(Include.NON_NULL)
-public class TicketAssignTo {
+public class TicketAssignToDao {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ticket_assign_id")
-	private Long Id;
+	@Column(name = "assignedId")
+	private Long id;
+
 	@ManyToOne
-	@JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id")
+	@JoinColumn(name = "ticketId", referencedColumnName = "ticketId")
 	@NotNull
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Ticket ticket;
 	@OneToOne
-	@JoinColumn(name = "my_emp_id")
+	@JoinColumn(name = "employeeId")
 	@NonNull
 	private Employee employee;
+	@Column(name = "logWorkHours")
 	private double logWorkHours;
 	@NonNull
+	@Column(name = "currentAssignee")
 	private boolean currentAssignee;
-	
+
 	public Ticket getTicket() {
 		return ticket;
 	}
+
 	public void setTicket(Ticket ticket) {
 		this.ticket = ticket;
 	}
+
 	public Employee getEmployee() {
 		return employee;
 	}
+
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
 	}
+
 	public double getLogWorkHours() {
 		return logWorkHours;
 	}
+
 	public void setLogWorkHours(double logWorkHours) {
 		this.logWorkHours = logWorkHours;
 	}
+
 	public boolean isCurrentAssignee() {
 		return currentAssignee;
 	}
+
 	public void setCurrentAssignee(boolean currentAssignee) {
 		this.currentAssignee = currentAssignee;
 	}
+
 	public Long getId() {
-		return Id;
+		return id;
 	}
+
 	public void setId(Long id) {
-		Id = id;
+		this.id = id;
 	}
-	
+
 }

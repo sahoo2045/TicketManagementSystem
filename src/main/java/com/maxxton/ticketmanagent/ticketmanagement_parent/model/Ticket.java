@@ -1,8 +1,7 @@
 package com.maxxton.ticketmanagent.ticketmanagement_parent.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -25,115 +24,112 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 
 @Entity
-@Table(name = "t_ticket")
+@Table(name = "ticket")
 @JsonInclude(Include.NON_NULL)
 public class Ticket {
 
 	@Id
-	@Column(name = "ticket_id")
-	private long ticket_id;
+	@Column(name = "ticketId")
+	private Long ticketId;
 	@NonNull
-	private String ticket_summary;
+	@Column(name = "summary")
+	private String summary;
 	@NonNull
-	private String ticket_description;
-	@OneToMany(cascade = {CascadeType.ALL})
-	private Set<TicketAssignTo> ticketAssignTo;
+	@Column(name = "description")
+	private String description;
+	@OneToMany(mappedBy = "ticket", cascade = { CascadeType.ALL })
+	private Set<TicketAssignToDao> assignTo = new HashSet<>();;
 	@NonNull
-	private long ticket_createdBy;
+	@Column(name = "createdBy")
+	private long createdBy;
 	@NonNull
-	private int ticket_riskLevel;
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date ticket_creationDate;
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date ticket_lastUpdate;
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date ticket_endDate;
-	@OneToMany(mappedBy = "ticket", cascade = CascadeType.REMOVE)
-    private List<Comment> comments = new ArrayList<>();
+	@Column(name = "priority")
+	private int priority;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "creationDate")
+	private Date creationDate;
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "lastUpdate")
+	private Date lastUpdate;
+	@OneToMany(mappedBy = "ticket", cascade = { CascadeType.ALL })
+	private Set<Comment> comments = new HashSet<>();
 	@Enumerated(EnumType.STRING)
 	@NonNull
+	@Column(name = "ticketStatus")
 	private TicketStatus ticket_status;
 	@NonNull
+	@Column(name = "ticketType")
 	private String ticket_type;
 
-
-	public long getTicket_id() {
-		return ticket_id;
+	public long getTicketId() {
+		return ticketId;
 	}
 
-	public void setTicket_id(long ticket_id) {
-		this.ticket_id = ticket_id;
+	public void setTicketId(long ticketId) {
+		this.ticketId = ticketId;
 	}
 
-	public String getTicket_summary() {
-		return ticket_summary;
+	public String getSummary() {
+		return summary;
 	}
 
-	public void setTicket_summary(String ticket_summary) {
-		this.ticket_summary = ticket_summary;
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
-	public String getTicket_description() {
-		return ticket_description;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setTicket_description(String ticket_description) {
-		this.ticket_description = ticket_description;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public Set<TicketAssignTo> getTicketAssignTo() {
-		return ticketAssignTo;
+	public Set<TicketAssignToDao> getAssignTo() {
+		return assignTo;
 	}
 
-	public void setTicketAssignTo(Set<TicketAssignTo> ticketAssignTo) {
-		this.ticketAssignTo = ticketAssignTo;
+	public void setAssignTo(Set<TicketAssignToDao> assignTo) {
+		this.assignTo = assignTo;
 	}
 
-	public long getTicket_createdBy() {
-		return ticket_createdBy;
+	public long getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setTicket_createdBy(long ticket_createdBy) {
-		this.ticket_createdBy = ticket_createdBy;
+	public void setCreatedBy(long createdBy) {
+		this.createdBy = createdBy;
 	}
 
-	public int getTicket_riskLevel() {
-		return ticket_riskLevel;
+	public int getPriority() {
+		return priority;
 	}
 
-	public void setTicket_riskLevel(int ticket_riskLevel) {
-		this.ticket_riskLevel = ticket_riskLevel;
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 
-	public Date getTicket_creationDate() {
-		return ticket_creationDate;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 
-	public void setTicket_creationDate(Date ticket_creationDate) {
-		this.ticket_creationDate = ticket_creationDate;
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 
-	public Date getTicket_lastUpdate() {
-		return ticket_lastUpdate;
+	public Date getLastUpdate() {
+		return lastUpdate;
 	}
 
-	public void setTicket_lastUpdate(Date ticket_lastUpdate) {
-		this.ticket_lastUpdate = ticket_lastUpdate;
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 
-	public Date getTicket_endDate() {
-		return ticket_endDate;
-	}
-
-	public void setTicket_endDate(Date ticket_endDate) {
-		this.ticket_endDate = ticket_endDate;
-	}
-
-	public List<Comment> getComments() {
+	public Set<Comment> getComments() {
 		return comments;
 	}
 
-	public void setComments(List<Comment> comments) {
+	public void setComments(Set<Comment> comments) {
 		this.comments = comments;
 	}
 
