@@ -85,17 +85,17 @@ public class TicketService {
 			/* Check for Asinee from DB */
 			if (null != tktEntity.get().getAssignTo() && !(tktEntity.get().getAssignTo().isEmpty())) {
 				tkt.setAssignTo(tktEntity.get().getAssignTo());
-				
+
 			} else {
 				if (null != tkt.getAssignTo() && !(tkt.getAssignTo().isEmpty())) {
 					throw new BadRequest("Ticket Assign is not allowed during current update operation");
 				}
 			}
-			
+
 			/* Check for Asinee from DB */
 			if (null != tktEntity.get().getComments() && !(tktEntity.get().getComments().isEmpty())) {
 				tkt.setComments(tktEntity.get().getComments());
-				
+
 			} else {
 				if (null != tkt.getComments() && !(tkt.getComments().isEmpty())) {
 					throw new BadRequest("Comment is not allowed during current update operation");

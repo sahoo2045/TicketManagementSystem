@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Ticket;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketAssignToDao;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.TicketStatus;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.security.UserDetailsImpl;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.service.TicketService;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -33,6 +36,10 @@ public class TicketController {
 	@RequestMapping(value = "/ticket/create", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Ticket> createTicket(@RequestBody Ticket tkt) {
 
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+		long loggedInUserId = userDetails.getUser().getEmployee().getId();
+		tkt.setCreatedBy(loggedInUserId);
 		Ticket response = ticketService.createTicket(tkt);
 		return new ResponseEntity<Ticket>(response, HttpStatus.CREATED);
 	}

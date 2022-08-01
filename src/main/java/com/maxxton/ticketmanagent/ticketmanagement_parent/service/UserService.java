@@ -15,6 +15,7 @@ import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.ItemNotFoun
 import com.maxxton.ticketmanagent.ticketmanagement_parent.exceptions.PasswordMismatchEception;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Employee;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.model.Users;
+import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.EmployeeRepo;
 import com.maxxton.ticketmanagent.ticketmanagement_parent.repo.UserRepo;
 
 @Transactional
@@ -24,16 +25,26 @@ public class UserService {
 	@Autowired
 	UserRepo userRepo;
 
+	@Autowired
+	EmployeeRepo empRepo;
+
 	Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	public Users createUsers(Users user) {
-		Users userDetails = userRepo.findByEmployeeId(user.getEmployee().getId());
-		if (null != userDetails) {
-			throw new InvalidIdException("Employee id already exists");
+		boolean exists = empRepo.existsById(user.getEmployee().getId());
+		if (exists) {
+			Users userDetails = userRepo.findByEmployeeId(user.getEmployee().getId());
+			if (null == userDetails) {
+				Users response = userRepo.save(user);
+				logger.info("User created successfully");
+				return response;
+			} else {
+				throw new InvalidIdException("Employee credentials already exists");
+			}
+		} else {
+			throw new ItemNotFoundException("Employee not found");
 		}
-		Users response = userRepo.save(user);
-		logger.info("User created successfully");
-		return response;
+
 	}
 
 	public List<Users> findAllUsers() {

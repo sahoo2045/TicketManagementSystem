@@ -60,6 +60,8 @@ public class Ticket {
 	@NonNull
 	@Column(name = "ticketType")
 	private String ticket_type;
+	
+	
 
 	public long getTicketId() {
 		return ticketId;
@@ -96,6 +98,7 @@ public class Ticket {
 	public long getCreatedBy() {
 		return createdBy;
 	}
+	
 
 	public void setCreatedBy(long createdBy) {
 		this.createdBy = createdBy;
